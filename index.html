@@ -145,8 +145,14 @@
     <header class="bg-esports-darkPurple border-b border-esports-lightPurple sticky top-0 z-40 shadow-xl">
         <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
             <div class="flex items-center space-x-3">
-                <div class="bg-esports-yellow text-black font-teko text-3xl px-3 py-1 font-bold rounded tracking-wider shadow-lg">
-                    RSK
+                <div class="flex flex-col items-center gap-1">
+                    <div class="bg-esports-yellow text-black font-teko text-3xl px-3 py-1 font-bold rounded tracking-wider shadow-lg">
+                        RSK
+                    </div>
+                    <button type="button" onclick="contactSupportWhatsApp()" class="w-full bg-emerald-600 hover:bg-emerald-500 border border-emerald-300 text-white px-1.5 py-0.5 rounded-md font-teko text-[12px] leading-tight whitespace-nowrap font-bold flex items-center justify-center gap-1 transition-all hover:scale-105 shadow-lg">
+                        <i class="fa-brands fa-whatsapp text-[10px]"></i>
+                        CONTACT US
+                    </button>
                 </div>
                 <div>
                     <h1 class="font-teko text-2xl md:text-3xl font-bold tracking-wider leading-none text-white">
@@ -200,15 +206,11 @@
 
     <!-- MATCH RESULTS QUICK ACCESS -->
     <div class="max-w-7xl mx-auto w-full px-4 pt-5">
-        <div class="flex flex-nowrap items-center justify-center gap-1.5 sm:gap-3">
+        <div class="flex flex-nowrap items-center justify-center gap-1 sm:gap-2">
             <button onclick="openResultModal()" class="bg-gradient-to-r from-amber-500/20 to-esports-purple border border-esports-yellow text-esports-yellow px-2 sm:px-4 py-1 sm:py-1.5 rounded-lg font-teko text-[13px] sm:text-lg leading-tight whitespace-nowrap font-bold flex items-center justify-center gap-1 sm:gap-2 transition-all hover:scale-105 shadow-lg">
                 <i class="fa-solid fa-trophy text-[10px] sm:text-sm"></i>
                 VIEW POINT TABLE
                 <i class="fa-solid fa-chevron-right text-[8px] sm:text-[10px]"></i>
-            </button>
-            <button type="button" onclick="contactSupportWhatsApp()" class="bg-emerald-600 hover:bg-emerald-500 border border-emerald-300 text-white px-2 sm:px-4 py-1 sm:py-1.5 rounded-lg font-teko text-[13px] sm:text-lg leading-tight whitespace-nowrap font-bold flex items-center justify-center gap-1 sm:gap-2 transition-all hover:scale-105 shadow-lg">
-                <i class="fa-brands fa-whatsapp text-[10px] sm:text-sm"></i>
-                CONTACT US
             </button>
             <button type="button" onclick="openSlotListModal()" class="bg-gradient-to-r from-sky-600 to-esports-lightPurple border border-esports-yellow text-white px-2 sm:px-4 py-1 sm:py-1.5 rounded-lg font-teko text-[13px] sm:text-lg leading-tight whitespace-nowrap font-bold flex items-center justify-center gap-1 sm:gap-2 transition-all hover:scale-105 shadow-lg">
                 <i class="fa-solid fa-list-check text-[10px] sm:text-sm text-esports-yellow"></i>
