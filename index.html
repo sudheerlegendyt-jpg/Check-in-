@@ -387,6 +387,21 @@
         </div>
     </div>
 
+    <!-- MODAL: ADMIN FIREBASE LOGIN (needed to save to Realtime Database) -->
+    <div id="adminFbAuthModal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden z-[75] flex items-center justify-center p-4">
+        <div class="bg-esports-darkPurple border-2 border-esports-yellow rounded-2xl max-w-sm w-full p-6 shadow-2xl text-center">
+            <i class="fa-solid fa-user-shield text-4xl text-esports-yellow mb-2"></i>
+            <h3 class="font-teko text-3xl font-bold text-white leading-none">ADMIN DATABASE LOGIN</h3>
+            <p class="text-xs text-gray-400 font-rajdhani mt-1 mb-4">Slot list / Room ID save karne ke liye Firebase admin password daalein (is phone me ek baar)</p>
+            <input type="password" id="adminFbPassInput" autocomplete="current-password" placeholder="Firebase admin password" onkeydown="if(event.key==='Enter'){submitAdminFbAuth();}" class="w-full bg-black/60 border border-esports-lightPurple text-white py-2.5 px-3 rounded-xl font-rajdhani font-bold focus:border-esports-yellow focus:outline-none">
+            <p id="adminFbAuthError" class="hidden mt-2 text-xs font-rajdhani font-bold text-red-400"></p>
+            <div class="flex gap-3 mt-4">
+                <button type="button" id="adminFbAuthBtn" onclick="submitAdminFbAuth()" class="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-teko text-2xl font-bold py-2 rounded-xl">LOGIN</button>
+                <button type="button" onclick="closeAdminFbAuthModal()" class="w-full bg-gray-700 hover:bg-gray-600 text-white font-teko text-2xl font-bold py-2 rounded-xl">CANCEL</button>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL: GET IDP / SLOT LIST (VIEWER) -->
     <div id="slotListModal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden z-50 flex items-center justify-center p-4">
         <div class="bg-esports-darkPurple border-2 border-esports-yellow rounded-2xl max-w-lg w-full p-6 shadow-2xl relative text-center overflow-y-auto" style="max-height:calc(100vh - 24px)">
@@ -994,6 +1009,7 @@
     <!-- Firebase Realtime Database (used for .PC match results synchronization) -->
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
 
     <!-- LOGIC JS -->
     <script>
@@ -2050,7 +2066,7 @@
                 renderAdminPoolEditor();
                 renderBookedSlotsTable();
                 renderAdminResultsManager();
-                startAdminSlotListeners();
+                adminSlotAuthThenStart();
                 renderAdminRank1Announcements();
                 checkAdminNotificationAlert();
                 document.getElementById('adminDashboard').classList.remove('hidden');
@@ -2855,6 +2871,63 @@
                 </div>`;
         }
 
+        /* ---------------- ADMIN FIREBASE AUTH ---------------- */
+        const RSK_ADMIN_FB_EMAIL = 'rskstudio7991@gmail.com';
+        let slAdminPanelOpen = false;
+
+        function slAuthOk() {
+            try { return !!(window.firebase && firebase.auth && firebase.auth().currentUser); } catch (_) { return false; }
+        }
+        function slInitAdminAuth() {
+            try {
+                firebase.auth().onAuthStateChanged(u => { if (u && slAdminPanelOpen) startAdminSlotListeners(); });
+            } catch (e) { console.error('Firebase Auth init failed:', e); }
+        }
+        window.addEventListener('load', slInitAdminAuth);
+
+        function slShowAdminAuthModal() {
+            const inp = document.getElementById('adminFbPassInput'), err = document.getElementById('adminFbAuthError');
+            if (inp) inp.value = '';
+            if (err) { err.textContent = ''; err.classList.add('hidden'); }
+            document.getElementById('adminFbAuthModal').classList.remove('hidden');
+        }
+        function closeAdminFbAuthModal() { document.getElementById('adminFbAuthModal').classList.add('hidden'); }
+        function slRequireAdmin() {
+            if (slAuthOk()) return true;
+            slShowAdminAuthModal();
+            return false;
+        }
+
+        async function submitAdminFbAuth() {
+            const pw = document.getElementById('adminFbPassInput').value;
+            const err = document.getElementById('adminFbAuthError'), btn = document.getElementById('adminFbAuthBtn');
+            const fail = m => { err.textContent = m; err.classList.remove('hidden'); };
+            err.classList.add('hidden');
+            if (!pw) return fail('Password daalein.');
+            if (!(window.firebase && firebase.auth)) return fail('Firebase Auth load nahi hua. Page refresh karein.');
+            btn.disabled = true; btn.textContent = 'CHECKING...';
+            try {
+                await firebase.auth().signInWithEmailAndPassword(RSK_ADMIN_FB_EMAIL, pw);
+                closeAdminFbAuthModal();
+                adminSlotErr = { rooms: '', lists: '' };
+                adminSlotListening = false;
+                startAdminSlotListeners();
+            } catch (e) {
+                console.error(e);
+                fail(/wrong-password|invalid-credential|invalid-login/i.test(e.code || '') ? 'Password galat hai.' : 'Login nahi ho paya (' + slErrText(e) + ').');
+            } finally {
+                btn.disabled = false; btn.textContent = 'LOGIN';
+            }
+        }
+
+        function adminSlotAuthThenStart() {
+            slAdminPanelOpen = true;
+            if (slAuthOk()) { startAdminSlotListeners(); return; }
+            adminSlotErr.rooms = adminSlotErr.lists = 'Firebase admin login baaki hai. Admin panel dobara kholein ya kuch save karne par password poochha jayega.';
+            renderAdminSlotManagers();
+            slShowAdminAuthModal();
+        }
+
         /* ---------------- ADMIN SIDE ---------------- */
         let adminSlotRooms = {}, adminSlotLists = {}, adminSlotListening = false;
         let slPendingPc = [], slPendingImg = [];
@@ -2918,6 +2991,7 @@
         }
 
         async function saveSlotRoomDetails() {
+            if (!slRequireAdmin()) return;
             const lobby = document.getElementById('adminSlRoomLobby').value, slot = document.getElementById('adminSlRoomSlot').value;
             const match = Number(document.getElementById('adminSlRoomMatch').value) || 1;
             const code = slNormCode(document.getElementById('adminSlRoomCode').value);
@@ -2962,6 +3036,7 @@
         }
 
         async function updateSlotRoomIdPass(code, n) {
+            if (!slRequireAdmin()) return;
             const r = adminSlotRooms[code]; if (!r) return alert('Ye group ab available nahi hai.');
             const roomId = (document.getElementById(`slEditRoomId_${code}_${n}`)?.value || '').trim();
             const roomPass = (document.getElementById(`slEditRoomPass_${code}_${n}`)?.value || '').trim();
@@ -2975,6 +3050,7 @@
         }
 
         function deleteSlotRoom(code) {
+            if (!slRequireAdmin()) return;
             const r = adminSlotRooms[code]; if (!r) return;
             if (!confirm(`${r.slot} • ${r.lobby} ka secret code aur room ID/pass DELETE karna chahte hain?`)) return;
             rskFirebaseDb.ref(RSK_SLOT_ROOMS_PATH + '/' + code).remove().then(() => slApplyLocal('rooms', { [code]: null })).catch(e => { console.error(e); alert('Delete nahi ho paya: ' + slErrText(e)); });
@@ -3085,6 +3161,7 @@
         }
 
         async function saveSlotList(type) {
+            if (!slRequireAdmin()) return;
             const lobby = document.getElementById('adminSlLobby').value, slot = document.getElementById('adminSlSlot').value;
             const date = document.getElementById('adminSlDateInput').value, replaceId = document.getElementById('adminSlReplaceId').value;
             const pending = type === 'pc' ? slPendingPc : slPendingImg;
@@ -3138,6 +3215,7 @@
         }
 
         function deleteSlotList(id) {
+            if (!slRequireAdmin()) return;
             const r = slAllLists().find(x => x.id === id); if (!r) return;
             if (!confirm(`${r.lobby} | ${r.slot} | ${r.date} ki slot list DELETE karna chahte hain? Delete karne ke baad ye kisi ko nahi dikhegi.`)) return;
             const gk = slGroupKey(r.slot, r.lobby);
