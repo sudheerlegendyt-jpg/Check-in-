@@ -392,7 +392,8 @@
         <div class="bg-esports-darkPurple border-2 border-esports-yellow rounded-2xl max-w-sm w-full p-6 shadow-2xl text-center">
             <i class="fa-solid fa-user-shield text-4xl text-esports-yellow mb-2"></i>
             <h3 class="font-teko text-3xl font-bold text-white leading-none">ADMIN DATABASE LOGIN</h3>
-            <p class="text-xs text-gray-400 font-rajdhani mt-1 mb-4">Slot list / Room ID save karne ke liye Firebase admin password daalein (is phone me ek baar)</p>
+            <p class="text-xs text-gray-400 font-rajdhani mt-1 mb-4">Result / Slot list / Room ID save karne ke liye Firebase admin email aur password daalein (is phone me ek baar). Login ke baad Save dobara dabayein.</p>
+            <input type="email" id="adminFbEmailInput" autocomplete="username" placeholder="Firebase admin email" class="w-full mb-3 bg-black/60 border border-esports-lightPurple text-white py-2.5 px-3 rounded-xl font-rajdhani font-bold focus:border-esports-yellow focus:outline-none">
             <input type="password" id="adminFbPassInput" autocomplete="current-password" placeholder="Firebase admin password" onkeydown="if(event.key==='Enter'){submitAdminFbAuth();}" class="w-full bg-black/60 border border-esports-lightPurple text-white py-2.5 px-3 rounded-xl font-rajdhani font-bold focus:border-esports-yellow focus:outline-none">
             <p id="adminFbAuthError" class="hidden mt-2 text-xs font-rajdhani font-bold text-red-400"></p>
             <div class="flex gap-3 mt-4">
@@ -2323,6 +2324,7 @@
         }
 
         function saveMatchResultPc(){
+            if (!slRequireAdmin()) return;
             const lobby=document.getElementById('adminResultLobbySelect')?.value||'L1',slot=document.getElementById('adminResultSlotSelect')?.value||'',date=document.getElementById('adminResultDateInput')?.value||'',replaceId=document.getElementById('adminResultReplaceId')?.value||'';
             if(!date)return alert('Kripya date select karein!');
             if(!pendingPcResults.length)return alert('Kripya .pc result file choose karein!');
@@ -2365,6 +2367,7 @@
         function prepareReplaceResult(i){const c=getAppConfig(),r=c.resultsList?.[i];if(!r)return;clearPendingResultPreview();document.getElementById('adminResultLobbySelect').value=r.lobby||'L1';document.getElementById('adminResultSlotSelect').value=r.slot||'1-3 PM';document.getElementById('adminResultDateInput').value=r.date||'';document.getElementById('adminResultReplaceId').value=r.type==='pc'?r.id:'';document.getElementById('adminResultImageReplaceId').value=r.type==='image'?r.id:'';alert(r.type==='image'?'REPLACE mode on hai. Nayi JPG/PNG photo choose karke pehle ADMIN VIEW/EDIT check karein, phir UPLOAD RESULT PHOTO dabayein.':'REPLACE mode on hai. Nayi .pc file choose karke pehle ADMIN VIEW/EDIT check karein, phir ADD / REPLACE .PC RESULT dabayein.');}
         
         function deleteResultItem(i){
+            if (!slRequireAdmin()) return;
             const c = getAppConfig();
             const r = c.resultsList?.[i];
             if(!r) return;
@@ -2872,7 +2875,6 @@
         }
 
         /* ---------------- ADMIN FIREBASE AUTH ---------------- */
-        const RSK_ADMIN_FB_EMAIL = 'rskstudio7991@gmail.com';
         let slAdminPanelOpen = false;
 
         function slAuthOk() {
@@ -2899,22 +2901,23 @@
         }
 
         async function submitAdminFbAuth() {
+            const email = (document.getElementById('adminFbEmailInput').value || '').trim();
             const pw = document.getElementById('adminFbPassInput').value;
             const err = document.getElementById('adminFbAuthError'), btn = document.getElementById('adminFbAuthBtn');
             const fail = m => { err.textContent = m; err.classList.remove('hidden'); };
             err.classList.add('hidden');
-            if (!pw) return fail('Password daalein.');
+            if (!email || !pw) return fail('Email aur password dono daalein.');
             if (!(window.firebase && firebase.auth)) return fail('Firebase Auth load nahi hua. Page refresh karein.');
             btn.disabled = true; btn.textContent = 'CHECKING...';
             try {
-                await firebase.auth().signInWithEmailAndPassword(RSK_ADMIN_FB_EMAIL, pw);
+                await firebase.auth().signInWithEmailAndPassword(email, pw);
                 closeAdminFbAuthModal();
                 adminSlotErr = { rooms: '', lists: '' };
                 adminSlotListening = false;
                 startAdminSlotListeners();
             } catch (e) {
                 console.error(e);
-                fail(/wrong-password|invalid-credential|invalid-login/i.test(e.code || '') ? 'Password galat hai.' : 'Login nahi ho paya (' + slErrText(e) + ').');
+                fail(/wrong-password|invalid-credential|invalid-login/i.test(e.code || '') ? 'Email ya password galat hai.' : 'Login nahi ho paya (' + slErrText(e) + ').');
             } finally {
                 btn.disabled = false; btn.textContent = 'LOGIN';
             }
