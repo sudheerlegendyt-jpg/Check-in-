@@ -86,10 +86,10 @@
 <body class="bg-grid min-h-screen flex flex-col justify-between selection:bg-esports-yellow selection:text-black">
 
     <!-- 1. TOP MOST HIGHLIGHTED ENTRY BANNER BOX -->
-    <div class="bg-gradient-to-r from-esports-yellow via-amber-400 to-esports-yellow text-black py-2.5 px-4 text-center font-teko text-2xl md:text-3xl font-extrabold tracking-wider shadow-lg border-b-2 border-amber-600 flex items-center justify-center gap-2">
-        <i class="fa-solid fa-ticket animate-bounce text-xl md:text-2xl"></i>
+    <div class="bg-gradient-to-r from-esports-yellow via-amber-400 to-esports-yellow text-black py-0.5 px-3 text-center font-teko text-[15px] md:text-lg leading-tight font-extrabold tracking-wide shadow-md border-b border-amber-600 flex items-center justify-center gap-1.5">
+        <i class="fa-solid fa-ticket animate-bounce text-xs md:text-sm"></i>
         <span id="topBannerTextDisplay">ENTRY - 40 / 50 / 60 / 70 RS ONLY</span>
-        <i class="fa-solid fa-fire text-red-600 ml-1"></i>
+        <i class="fa-solid fa-fire text-red-600 ml-0.5 text-xs md:text-sm"></i>
     </div>
 
     <!-- SMALL MAIN-SCREEN NOTICE POPUP -->
@@ -200,18 +200,18 @@
 
     <!-- MATCH RESULTS QUICK ACCESS -->
     <div class="max-w-7xl mx-auto w-full px-4 pt-5">
-        <div class="flex flex-wrap items-center justify-center gap-3">
-            <button onclick="openResultModal()" class="bg-gradient-to-r from-amber-500/20 to-esports-purple border border-esports-yellow text-esports-yellow px-4 py-1.5 rounded-lg font-teko text-lg font-bold flex items-center justify-center gap-2 transition-all hover:scale-105 shadow-lg">
-                <i class="fa-solid fa-trophy text-sm"></i>
-                MATCH RESULTS
-                <i class="fa-solid fa-chevron-right text-[10px]"></i>
+        <div class="flex flex-nowrap items-center justify-center gap-1.5 sm:gap-3">
+            <button onclick="openResultModal()" class="bg-gradient-to-r from-amber-500/20 to-esports-purple border border-esports-yellow text-esports-yellow px-2 sm:px-4 py-1 sm:py-1.5 rounded-lg font-teko text-[13px] sm:text-lg leading-tight whitespace-nowrap font-bold flex items-center justify-center gap-1 sm:gap-2 transition-all hover:scale-105 shadow-lg">
+                <i class="fa-solid fa-trophy text-[10px] sm:text-sm"></i>
+                VIEW POINT TABLE
+                <i class="fa-solid fa-chevron-right text-[8px] sm:text-[10px]"></i>
             </button>
-            <button type="button" onclick="contactSupportWhatsApp()" class="bg-emerald-600 hover:bg-emerald-500 border border-emerald-300 text-white px-4 py-1.5 rounded-lg font-teko text-lg font-bold flex items-center justify-center gap-2 transition-all hover:scale-105 shadow-lg">
-                <i class="fa-brands fa-whatsapp text-sm"></i>
+            <button type="button" onclick="contactSupportWhatsApp()" class="bg-emerald-600 hover:bg-emerald-500 border border-emerald-300 text-white px-2 sm:px-4 py-1 sm:py-1.5 rounded-lg font-teko text-[13px] sm:text-lg leading-tight whitespace-nowrap font-bold flex items-center justify-center gap-1 sm:gap-2 transition-all hover:scale-105 shadow-lg">
+                <i class="fa-brands fa-whatsapp text-[10px] sm:text-sm"></i>
                 CONTACT US
             </button>
-            <button type="button" onclick="openSlotListModal()" class="bg-gradient-to-r from-sky-600 to-esports-lightPurple border border-esports-yellow text-white px-4 py-1.5 rounded-lg font-teko text-lg font-bold flex items-center justify-center gap-2 transition-all hover:scale-105 shadow-lg">
-                <i class="fa-solid fa-list-check text-sm text-esports-yellow"></i>
+            <button type="button" onclick="openSlotListModal()" class="bg-gradient-to-r from-sky-600 to-esports-lightPurple border border-esports-yellow text-white px-2 sm:px-4 py-1 sm:py-1.5 rounded-lg font-teko text-[13px] sm:text-lg leading-tight whitespace-nowrap font-bold flex items-center justify-center gap-1 sm:gap-2 transition-all hover:scale-105 shadow-lg">
+                <i class="fa-solid fa-list-check text-[10px] sm:text-sm text-esports-yellow"></i>
                 GET IDP / SLOT LIST
             </button>
         </div>
