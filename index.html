@@ -207,12 +207,12 @@
     <!-- MATCH RESULTS QUICK ACCESS -->
     <div class="max-w-7xl mx-auto w-full px-4 pt-5">
         <div class="flex flex-nowrap items-center justify-center gap-1 sm:gap-2">
-            <button onclick="openResultModal()" class="bg-gradient-to-r from-amber-500/20 to-esports-purple border border-esports-yellow text-esports-yellow px-2 sm:px-4 py-1 sm:py-1.5 rounded-lg font-teko text-[13px] sm:text-lg leading-tight whitespace-nowrap font-bold flex items-center justify-center gap-1 sm:gap-2 transition-all hover:scale-105 shadow-lg">
+            <button onclick="openResultModal()" class="bg-gradient-to-r from-amber-500/20 to-esports-purple border border-esports-yellow text-esports-yellow px-3 sm:px-4 py-1 sm:py-1.5 rounded-lg font-teko text-[15px] sm:text-lg tracking-wide leading-tight whitespace-nowrap font-bold flex items-center justify-center gap-1 sm:gap-2 transition-all hover:scale-105 shadow-lg">
                 <i class="fa-solid fa-trophy text-[10px] sm:text-sm"></i>
                 VIEW POINT TABLE
                 <i class="fa-solid fa-chevron-right text-[8px] sm:text-[10px]"></i>
             </button>
-            <button type="button" onclick="openSlotListModal()" class="bg-gradient-to-r from-sky-600 to-esports-lightPurple border border-esports-yellow text-white px-2 sm:px-4 py-1 sm:py-1.5 rounded-lg font-teko text-[13px] sm:text-lg leading-tight whitespace-nowrap font-bold flex items-center justify-center gap-1 sm:gap-2 transition-all hover:scale-105 shadow-lg">
+            <button type="button" onclick="openSlotListModal()" class="bg-gradient-to-r from-sky-600 to-esports-lightPurple border border-esports-yellow text-white px-3 sm:px-4 py-1 sm:py-1.5 rounded-lg font-teko text-[15px] sm:text-lg tracking-wide leading-tight whitespace-nowrap font-bold flex items-center justify-center gap-1 sm:gap-2 transition-all hover:scale-105 shadow-lg">
                 <i class="fa-solid fa-list-check text-[10px] sm:text-sm text-esports-yellow"></i>
                 GET IDP / SLOT LIST
             </button>
@@ -393,8 +393,8 @@
     <div id="adminFbAuthModal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden z-[75] flex items-center justify-center p-4">
         <div class="bg-esports-darkPurple border-2 border-esports-yellow rounded-2xl max-w-sm w-full p-6 shadow-2xl text-center">
             <i class="fa-solid fa-user-shield text-4xl text-esports-yellow mb-2"></i>
-            <h3 class="font-teko text-3xl font-bold text-white leading-none">ADMIN DATABASE LOGIN</h3>
-            <p class="text-xs text-gray-400 font-rajdhani mt-1 mb-4">Result / Slot list / Room ID save karne ke liye Firebase admin email aur password daalein (is phone me ek baar). Login ke baad Save dobara dabayein.</p>
+            <h3 class="font-teko text-3xl font-bold text-white leading-none">ADMIN LOGIN</h3>
+            <p class="text-xs text-gray-400 font-rajdhani mt-1 mb-4">Admin email aur password daalein (is phone me ek baar). Result / Slot list / Room ID save karne ke liye bhi yahi login chahiye.</p>
             <input type="email" id="adminFbEmailInput" autocomplete="username" placeholder="Firebase admin email" class="w-full mb-3 bg-black/60 border border-esports-lightPurple text-white py-2.5 px-3 rounded-xl font-rajdhani font-bold focus:border-esports-yellow focus:outline-none">
             <input type="password" id="adminFbPassInput" autocomplete="current-password" placeholder="Firebase admin password" onkeydown="if(event.key==='Enter'){submitAdminFbAuth();}" class="w-full bg-black/60 border border-esports-lightPurple text-white py-2.5 px-3 rounded-xl font-rajdhani font-bold focus:border-esports-yellow focus:outline-none">
             <p id="adminFbAuthError" class="hidden mt-2 text-xs font-rajdhani font-bold text-red-400"></p>
@@ -630,22 +630,6 @@
     </div>
 
     <!-- MODAL 3: ADMIN LOGIN -->
-    <div id="adminLoginModal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-esports-darkPurple border-2 border-esports-yellow rounded-2xl max-w-sm w-full p-6 text-center relative">
-            <button onclick="closeAdminLoginModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-            <h3 class="font-teko text-3xl font-bold text-white mb-4">ADMIN LOGIN</h3>
-            <form onsubmit="handleAdminLogin(event)" class="space-y-4">
-                <input type="password" id="adminPassInput" required placeholder="Enter Admin Passcode" class="w-full bg-black/50 border border-esports-lightPurple text-white py-2 px-3 rounded-lg font-rajdhani">
-                <div class="flex gap-2">
-                    <button type="button" onclick="closeAdminLoginModal()" class="w-1/3 bg-gray-700 text-white font-teko text-xl font-bold py-2 rounded-xl">BACK</button>
-                    <button type="submit" class="w-2/3 bg-esports-yellow text-black font-teko text-xl font-bold py-2 rounded-xl">LOGIN</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
     <!-- ADMIN PANEL DASHBOARD -->
     <div id="adminDashboard" class="fixed inset-0 bg-black/95 backdrop-blur-lg hidden z-50 overflow-y-auto p-4 md:p-8">
         <div class="max-w-7xl mx-auto space-y-6">
@@ -1114,7 +1098,6 @@
         const DEFAULT_CONFIG = {
             upiId: "7317601274@upi",
             customQrImage: "",
-            adminPass: "9793694317",
             noticeText: "",
             noticeImage: "",
             showTopBannerNotice: false,
@@ -2050,32 +2033,21 @@
 
         // ADMIN FUNCTIONS
         function openAdminLoginModal() {
-            document.getElementById('adminPassInput').value = '';
-            document.getElementById('adminLoginModal').classList.remove('hidden');
+            if (slAuthOk()) { openAdminDashboard(); return; }
+            slOpenDashboardAfterLogin = true;
+            slShowAdminAuthModal();
         }
 
-        function closeAdminLoginModal() {
-            document.getElementById('adminLoginModal').classList.add('hidden');
-        }
-
-        function handleAdminLogin(e) {
-            e.preventDefault();
-            const pass = document.getElementById('adminPassInput').value;
-            if(pass === '9793694317') {
-                requestNotificationPermission();
-
-                document.getElementById('adminLoginModal').classList.add('hidden');
-                loadAdminFormValues();
-                renderAdminPoolEditor();
-                renderBookedSlotsTable();
-                renderAdminResultsManager();
-                adminSlotAuthThenStart();
-                renderAdminRank1Announcements();
-                checkAdminNotificationAlert();
-                document.getElementById('adminDashboard').classList.remove('hidden');
-            } else {
-                alert('Wrong passcode!');
-            }
+        function openAdminDashboard() {
+            requestNotificationPermission();
+            loadAdminFormValues();
+            renderAdminPoolEditor();
+            renderBookedSlotsTable();
+            renderAdminResultsManager();
+            adminSlotAuthThenStart();
+            renderAdminRank1Announcements();
+            checkAdminNotificationAlert();
+            document.getElementById('adminDashboard').classList.remove('hidden');
         }
 
         function closeAdminDashboard() {
@@ -2878,6 +2850,7 @@
 
         /* ---------------- ADMIN FIREBASE AUTH ---------------- */
         let slAdminPanelOpen = false;
+        let slOpenDashboardAfterLogin = false;
 
         function slAuthOk() {
             try { return !!(window.firebase && firebase.auth && firebase.auth().currentUser); } catch (_) { return false; }
@@ -2895,7 +2868,7 @@
             if (err) { err.textContent = ''; err.classList.add('hidden'); }
             document.getElementById('adminFbAuthModal').classList.remove('hidden');
         }
-        function closeAdminFbAuthModal() { document.getElementById('adminFbAuthModal').classList.add('hidden'); }
+        function closeAdminFbAuthModal() { slOpenDashboardAfterLogin = false; document.getElementById('adminFbAuthModal').classList.add('hidden'); }
         function slRequireAdmin() {
             if (slAuthOk()) return true;
             slShowAdminAuthModal();
@@ -2913,10 +2886,11 @@
             btn.disabled = true; btn.textContent = 'CHECKING...';
             try {
                 await firebase.auth().signInWithEmailAndPassword(email, pw);
+                const openDash = slOpenDashboardAfterLogin;
                 closeAdminFbAuthModal();
                 adminSlotErr = { rooms: '', lists: '' };
                 adminSlotListening = false;
-                startAdminSlotListeners();
+                if (openDash) openAdminDashboard(); else startAdminSlotListeners();
             } catch (e) {
                 console.error(e);
                 fail(/wrong-password|invalid-credential|invalid-login/i.test(e.code || '') ? 'Email ya password galat hai.' : 'Login nahi ho paya (' + slErrText(e) + ').');
